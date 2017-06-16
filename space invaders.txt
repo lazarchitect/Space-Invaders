@@ -1,0 +1,30 @@
+Things you need to program space invaders
+
+classes for:
+the player character, a fast alien hunter
+	values: location?, lives
+	moves based on player input
+	upon occupying the same space as a bullet or enemy, the gamestate goes down 1 life.
+
+the walls, static barriers that can break
+	values: stage
+	when it occupies the same state as a bullet, it goes down a stage and gets slightly smaller. once it hits stage 21 or so, it is deleted.
+
+the enemies, slow-moving yet encroaching aliens
+	values: location, stage
+	moves left until it hits the left edge, where it moves down 1 and starts going right until it hits the right edge and goes down 1. repeat. also it shoots a bullet downwards every few seconds.
+	if it occupies the same space as a bullet, it disappears and gives you 10 pts.
+	its stage is dependent on the amount of enemies. every time 5 enemies disappear, its movement and shooting become 1.2x faster.
+
+the UFO, a big-ticket hard to hit harmless alien ship
+	values: nothing
+	appears from the top left or right once a minute and goes across the top of the screen.
+	if it occupies the same space as a bullet, it disappears and gives you 500pts.
+
+the bullets, mindless omnicidal weapons
+	values: nothing
+	moves forward quickly. when it occupies the same space as anything else, or hits the end of the screen, it disappears.
+
+the gamestate(?)
+	values: lives, points
+	when lives hits 0, the game ends and the points are displayed.
