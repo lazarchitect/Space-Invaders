@@ -3,6 +3,7 @@ import pygame
 from Ship import Ship
 from Alien import Alien
 from Bullet import Bullet 
+from Barrier import Barrier
 from time import sleep
 
 import ctypes
@@ -31,8 +32,14 @@ screen.fill(backgroundColor)
 quitMsg = pygame.font.SysFont("couriernew", 24).render("Spacebar to shoot. Press q to quit", 0, (128, 100, 100))
 screen.blit(quitMsg, (10, 10))
 
-ship = Ship(x/2, y-120)
+ship = Ship(screen, x/2, y-120)
 ship.move(screen, 0)
+
+barriers = []
+for i in range(5):
+	tempVar = Barrier(screen, x * (5+(20*i))/100, y -200)
+	barriers.append(tempVar)
+	screen.blit(tempVar.image, (tempVar.x, tempVar.y))
 
 bullets = []
 
@@ -51,12 +58,19 @@ while(True):
 
 	if ticks() - bulletClock > 500: # can only shoot a bullet twice a second. in the original game there was no timer except there could only be one friendly bullet up at once...
 		bulletAvailable = True
-
 	
 	for eachBullet in bullets:
 		eachBullet.advance(screen)
 		if eachBullet.rect.bottom == 0:
 			bullets.remove(eachBullet)
+
+		boom = eachBullet.rect.collidelist(barriers)
+		if boom != -1:
+			barriers[boom].degrade(screen)
+			bullets.remove(eachBullet)
+			if barriers[boom].quality == 0:
+				del barriers[boom]
+
 
 	pressedKeys = pygame.key.get_pressed()
 

@@ -5,9 +5,9 @@ backgroundColor = (255, 255, 255)
 class Ship():
 
 
-	def __init__(self, x, y):
-		w = 100
-		h = 100
+	def __init__(self, screen, x, y):
+		w = int(screen.get_width()/20)
+		h = int(screen.get_height()/11)
 		self.rect = pygame.Rect(x, y, w, h)
 		self.img =  pygame.transform.scale(pygame.image.load("ship.png"), (w, h))
 	

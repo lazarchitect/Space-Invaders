@@ -11,7 +11,7 @@ class Bullet():
 	
 
 	def __init__(self, screen, x, y):
-		self.rect = pygame.Rect(x, y, 8, 40)
+		self.rect = pygame.Rect(x, y, int(screen.get_width()/240), int(screen.get_height()/27))
 		
 
 	def advance(self, screen):
