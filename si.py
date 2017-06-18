@@ -37,11 +37,13 @@ ship.move(screen, 0)
 
 barriers = []
 for i in range(5):
-	tempVar = Barrier(screen, x * (5+(20*i))/100, y -200)
+	tempVar = Barrier(screen, x * (5+(20*i))/100, y - 250)
 	barriers.append(tempVar)
 	screen.blit(tempVar.image, (tempVar.x, tempVar.y))
 
 bullets = []
+bulletWidth = int(screen.get_width()/240)
+bulletHeight = int(screen.get_height()/27)
 
 pygame.display.flip() #sets up the window's visuals.
 
@@ -64,10 +66,12 @@ while(True):
 		if eachBullet.rect.bottom == 0:
 			bullets.remove(eachBullet)
 
-		boom = eachBullet.rect.collidelist(barriers)
+		boom = eachBullet.rect.collidelist(barriers) # did a bullet hit a barrier? -1 if no (see pygame.Rect docs)
 		if boom != -1:
 			barriers[boom].degrade(screen)
 			bullets.remove(eachBullet)
+			pygame.draw.rect(screen, backgroundColor, eachBullet.rect)
+			pygame.display.update(eachBullet.rect)
 			if barriers[boom].quality == 0:
 				del barriers[boom]
 
@@ -76,7 +80,7 @@ while(True):
 
 
 	if pressedKeys[pygame.K_SPACE] == 1 and bulletAvailable: #shoot!
-		bullets.append(Bullet(screen, ship.rect.centerx, ship.rect.top-20))
+		bullets.append(Bullet(screen, ship.rect.centerx, ship.rect.top-bulletHeight, bulletWidth, bulletHeight))
 		bulletAvailable = False
 		bulletClock = ticks()
 

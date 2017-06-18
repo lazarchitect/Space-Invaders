@@ -10,8 +10,8 @@ BulletColor = GREEN
 class Bullet():
 	
 
-	def __init__(self, screen, x, y):
-		self.rect = pygame.Rect(x, y, int(screen.get_width()/240), int(screen.get_height()/27))
+	def __init__(self, screen, x, y, w, h):
+		self.rect = pygame.Rect(x, y, w, h)
 		
 
 	def advance(self, screen):

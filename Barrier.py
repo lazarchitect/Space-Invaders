@@ -11,7 +11,7 @@ class Barrier():
 		self.y = y
 
 		self.w = int(screen.get_width()/10)
-		self.h = int(screen.get_height()/10)
+		self.h = int(screen.get_height()/13)
 
 		self.quality = 5 # the lower the quality, the worse for wear the wall is. at zero, the wall falls apart. 
 
