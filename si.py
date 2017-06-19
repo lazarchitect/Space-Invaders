@@ -3,7 +3,9 @@ from Ship import Ship
 from Alien import Alien
 from Bullet import Bullet 
 from Barrier import Barrier
+from EnemyBullet import EnemyBullet
 from time import sleep
+from random import choice
 
 import ctypes
 ctypes.windll.user32.SetProcessDPIAware() #to negate Windows' 125% stretching
@@ -45,8 +47,11 @@ bulletHeight = int(screen.get_height()/27)
 bulletClock = ticks()
 bulletAvailable = True
 
+enemybullets = []
+
 aliens = []
 alienMoveClock = ticks()
+alienShotClock = ticks()
 alienDirection = 1
 alienDirectionCounter = 0
 for alienRow in range(14):
@@ -56,6 +61,7 @@ for alienRow in range(14):
 		tempAlien = Alien(screen, "variant1", alienX, alienY)
 		aliens.append(tempAlien)
 		screen.blit(tempAlien.img, (tempAlien.x, tempAlien.y))
+
 
 pygame.display.flip() #sets up the window's visuals.
 
@@ -72,6 +78,11 @@ while(True):
 
 	if ticks() - bulletClock > 500: # can only shoot a bullet twice a second. in the original game there was no timer except there could only be one friendly bullet up at once...
 		bulletAvailable = True
+
+	if ticks() - alienShotClock > 500:
+		alienShotClock = ticks()
+		shooter = choice(aliens)
+		enemybullets.append(EnemyBullet(screen, shooter.rect.centerx, shooter.rect.bottom, bulletWidth, bulletHeight))
 
 	if ticks() - alienMoveClock > 1000:
 		alienMoveClock = ticks()
@@ -106,6 +117,30 @@ while(True):
 			pygame.draw.rect(screen, backgroundColor, aliens[alienHit].rect)
 			pygame.display.update(aliens[alienHit].rect)
 			del aliens[alienHit]
+
+			#TO DO: INCREASE SCORE
+
+	for eachEnemyBullet in enemybullets:
+		eachEnemyBullet.advance(screen)		
+		if eachEnemyBullet.rect.top == y:
+			enemybullets.remove(eachEnemyBullet)
+
+		barrierHit = eachEnemyBullet.rect.collidelist(barriers) # did this bullet hit a barrier? -1 if no (see pygame.Rect docs)
+		if barrierHit != -1:
+			barriers[barrierHit].degrade(screen)
+			enemybullets.remove(eachEnemyBullet)
+			pygame.draw.rect(screen, backgroundColor, eachEnemyBullet.rect)
+			pygame.display.update(eachEnemyBullet.rect)
+			if barriers[barrierHit].quality == 0:
+				del barriers[barrierHit]	
+
+		shipHit = eachEnemyBullet.rect.colliderect(ship)	#note colliderect not collidelist
+		if shipHit:
+			enemybullets.remove(eachEnemyBullet)
+			pygame.draw.rect(screen, backgroundColor, eachEnemyBullet.rect)
+			pygame.display.update(eachEnemyBullet.rect)
+
+			#TO DO: LOSE A LIFE
 
 
 

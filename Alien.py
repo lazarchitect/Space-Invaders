@@ -16,6 +16,7 @@ class Alien():
 
 	#direction can be -1 for left, 1 for right, or 0 for down. 
 	def move(self, screen, direction):
+		
 		pygame.draw.rect(screen, backgroundColor, self.rect)
 		pygame.display.update(self.rect)
 
@@ -26,7 +27,5 @@ class Alien():
 		else:
 			self.rect.move_ip(0, 20)
 
-
 		screen.blit(self.img, (self.rect.left, self.rect.top))
-
 		pygame.display.update(self.rect)
