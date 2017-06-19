@@ -1,4 +1,3 @@
-
 import pygame
 from Ship import Ship
 from Alien import Alien
@@ -17,10 +16,7 @@ WHITE = (255, 255, 255)
 backgroundColor = WHITE
 
 pygame.init()
-
 ticks = pygame.time.get_ticks
-bulletClock = ticks()
-bulletAvailable = True
 
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 x, y = screen.get_size()
@@ -32,6 +28,8 @@ screen.fill(backgroundColor)
 quitMsg = pygame.font.SysFont("couriernew", 24).render("Spacebar to shoot. Press q to quit", 0, (128, 100, 100))
 screen.blit(quitMsg, (10, 10))
 
+
+#########################################################
 ship = Ship(screen, x/2, y-120)
 ship.move(screen, 0)
 
@@ -44,6 +42,20 @@ for i in range(5):
 bullets = []
 bulletWidth = int(screen.get_width()/240)
 bulletHeight = int(screen.get_height()/27)
+bulletClock = ticks()
+bulletAvailable = True
+
+aliens = []
+alienMoveClock = ticks()
+alienDirection = 1
+alienDirectionCounter = 0
+for alienRow in range(14):
+	for alienCol in range(5):
+		alienX = 100 + (alienRow * 120)
+		alienY = 100 + (alienCol * 100)
+		tempAlien = Alien(screen, "variant1", alienX, alienY)
+		aliens.append(tempAlien)
+		screen.blit(tempAlien.img, (tempAlien.x, tempAlien.y))
 
 pygame.display.flip() #sets up the window's visuals.
 
@@ -60,20 +72,41 @@ while(True):
 
 	if ticks() - bulletClock > 500: # can only shoot a bullet twice a second. in the original game there was no timer except there could only be one friendly bullet up at once...
 		bulletAvailable = True
+
+	if ticks() - alienMoveClock > 1000:
+		alienMoveClock = ticks()
+		for eachAlien in aliens:
+			eachAlien.move(screen, alienDirection)
+		alienDirectionCounter += 1
+		if alienDirectionCounter == 6:
+			for eachAlien in aliens:
+				eachAlien.move(screen, 0)
+			alienDirectionCounter = 0
+			alienDirection *= -1		
 	
 	for eachBullet in bullets:
 		eachBullet.advance(screen)
 		if eachBullet.rect.bottom == 0:
 			bullets.remove(eachBullet)
 
-		boom = eachBullet.rect.collidelist(barriers) # did a bullet hit a barrier? -1 if no (see pygame.Rect docs)
-		if boom != -1:
-			barriers[boom].degrade(screen)
+		barrierHit = eachBullet.rect.collidelist(barriers) # did this bullet hit a barrier? -1 if no (see pygame.Rect docs)
+		if barrierHit != -1:
+			barriers[barrierHit].degrade(screen)
 			bullets.remove(eachBullet)
 			pygame.draw.rect(screen, backgroundColor, eachBullet.rect)
 			pygame.display.update(eachBullet.rect)
-			if barriers[boom].quality == 0:
-				del barriers[boom]
+			if barriers[barrierHit].quality == 0:
+				del barriers[barrierHit]
+
+		alienHit = eachBullet.rect.collidelist(aliens)
+		if alienHit != -1:
+			bullets.remove(eachBullet)
+			pygame.draw.rect(screen, backgroundColor, eachBullet.rect)
+			pygame.display.update(eachBullet.rect)
+			pygame.draw.rect(screen, backgroundColor, aliens[alienHit].rect)
+			pygame.display.update(aliens[alienHit].rect)
+			del aliens[alienHit]
+
 
 
 	pressedKeys = pygame.key.get_pressed()
